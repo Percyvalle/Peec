@@ -108,7 +108,7 @@ TEST(TestFilePath, Normalize)
 
 TEST(TestFilePath, IsDirectory)
 {
-	FileS::PathStruct path("bar/");
+	FileS::PathStruct path("C:\\");
 	EXPECT_EQ(path.IsDirectory(), true);
 }
 

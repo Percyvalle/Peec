@@ -144,6 +144,7 @@
     <ClCompile Include="PeecServerFileContainer.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="PeecCommandHandlers.hpp" />
     <ClInclude Include="PeecClientPeerIMPL.hpp" />
     <ClInclude Include="PeecServerPeerHandlers.hpp" />
     <ClInclude Include="PeecServerPeerIMPL.hpp" />

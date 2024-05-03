@@ -7,7 +7,7 @@
 
 namespace Utils 
 {
-	UINT GetCountCPU();
+	DWORD GetCountCPU();
 
 	std::string ConvertStatusToStr(MessageStatus _status);
 }

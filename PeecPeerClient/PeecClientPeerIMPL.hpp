@@ -8,40 +8,27 @@
 class ClientIMPL : public Net::ClientInterface<MessageTypes>
 {
 public:
-
-	Net::OWN_MSG_PTR<MessageTypes> GETFilesList();
-	Net::OWN_MSG_PTR<MessageTypes> GETFileLocation(const JSON& _data);
-
-	Net::OWN_MSG_PTR<MessageTypes> RegistrationFile(const JSON& _data);
+	
+	Net::OWN_MSG_PTR<MessageTypes> GETRequest(MessageTypes _type);
+	Net::OWN_MSG_PTR<MessageTypes> POSTRequest(MessageTypes _type, const JSON& _data);
 
 	Net::OWN_MSG_PTR<MessageTypes> WaitingResponse();
 };
 
-inline Net::OWN_MSG_PTR<MessageTypes> ClientIMPL::GETFilesList()
+inline Net::OWN_MSG_PTR<MessageTypes> ClientIMPL::GETRequest(MessageTypes _type)
 {
 	Net::Message<MessageTypes> msg;
-	msg.SetType(MessageTypes::GetFileList);
-
+	msg.SetType(_type);
+	
 	Send(msg);
 
 	return WaitingResponse();
 }
 
-inline Net::OWN_MSG_PTR<MessageTypes> ClientIMPL::GETFileLocation(const JSON& _data)
+inline Net::OWN_MSG_PTR<MessageTypes> ClientIMPL::POSTRequest(MessageTypes _type, const JSON& _data)
 {
 	Net::Message<MessageTypes> msg;
-	msg.SetType(MessageTypes::FileLocation);
-	msg << _data.dump();
-
-	Send(msg);
-
-	return WaitingResponse();
-}
-
-inline Net::OWN_MSG_PTR<MessageTypes> ClientIMPL::RegistrationFile(const JSON& _data)
-{
-	Net::Message<MessageTypes> msg;
-	msg.SetType(MessageTypes::FileRegistration);
+	msg.SetType(_type);
 	msg << _data.dump();
 
 	Send(msg);

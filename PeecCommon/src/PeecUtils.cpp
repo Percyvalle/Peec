@@ -1,6 +1,6 @@
 #include "PeecUtils.hpp"
 
-UINT Utils::GetCountCPU()
+DWORD Utils::GetCountCPU()
 {
 	SYSTEM_INFO sysinfo;
 	GetSystemInfo(&sysinfo);

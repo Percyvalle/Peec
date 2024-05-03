@@ -27,10 +27,10 @@ namespace Pool {
 		std::packaged_task<Result()> task;
 	public:
 		template<typename Func, typename... Args>
-		ThreadTask(Func&& _func, Args&&... args) :
+		ThreadTask(Func&& _func, Args&&... _args) :
 			task(
 				[f = std::forward<Func>(_func),
-				 args = std::tuple(std::forward<Args>(args)...)]()
+				 args = std::tuple(std::forward<Args>(_args)...)]()
 				{
 					return std::apply(f, args);
 				}
@@ -42,7 +42,7 @@ namespace Pool {
 			return task.get_future();
 		}
 
-		void Execute() final { task(); }
+		void Execute() { task(); }
 		
 		ThreadTask(ThreadTask&&) = default;
 		ThreadTask& operator=(ThreadTask&&) = default;

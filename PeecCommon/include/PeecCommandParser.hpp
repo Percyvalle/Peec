@@ -5,6 +5,7 @@
 
 #include <Windows.h>
 #include <sstream>
+#include <tuple>
 
 namespace Utils
 {
@@ -34,6 +35,36 @@ namespace Utils
 		}
 	};
 
+
+	class CommandTask
+	{
+	private:
+		std::function<void(const Command&)> task;
+	public:
+		template<typename Func, typename... Args>
+		CommandTask(Func&& _func, Args&&... _args) 
+			: task([func = std::forward<Func>(_func),
+					args = std::tuple(std::forward<Args>(_args)...)](const Command& _command)
+					{
+						std::apply(func, std::tuple_cat(std::make_tuple(_command), args));
+					})
+		{}
+
+		void Execute(const Command& _command) const { task(_command); }
+	
+		CommandTask(CommandTask&&) = default;
+		CommandTask& operator=(CommandTask&&) = default;
+		CommandTask(const CommandTask&) = delete;
+		CommandTask& operator=(const CommandTask&) = delete;
+	};
+
+	template<typename Func, typename... Args>
+	std::unique_ptr<CommandTask> MakeCommandTask(Func&& _func, Args&&... _args)
+	{
+		return std::make_unique<CommandTask>(std::forward<Func>(_func),
+										     std::forward<Args>(_args)...);
+	}
+
 	class CommandParser
 	{
 	private:
@@ -43,9 +74,7 @@ namespace Utils
 			STOPPED
 		};
 
-		std::thread parseThread;
-		std::unordered_set<std::string> exitCommands;
-		std::unordered_set<std::string> existingCommands;
+		std::unordered_map<std::string, std::unique_ptr<CommandTask>> callbackCommand;
 		std::atomic<ParserStates> parserState = ParserStates::STOPPED;
 
 		Utils::QueueLF<Command> commandQueue;
@@ -57,37 +86,21 @@ namespace Utils
 			StopParse();
 		}
 
-		void AddCommand(const std::string& _command)
+		template<typename Func, typename... Args>
+		void RegisterCommand(const std::string& _command, Func&& _func, Args&&... _args)
 		{
-			existingCommands.insert(_command);
-		}
-
-		void AddExitCommand(const std::string& _command)
-		{
-			existingCommands.insert(_command);
-			exitCommands.insert(_command);
+			callbackCommand[_command] = MakeCommandTask(std::forward<Func>(_func), std::forward<Args>(_args)...);
 		}
 
 		void ExecuteParse()
 		{
 			parserState = ParserStates::RUNNING;
-			if (!parseThread.joinable())
-			{
-				parseThread = std::thread(
-					[this]()
-					{
-						GettingCommandLine();
-					});
-			}
+			GettingCommandLine();
 		}
 
 		void StopParse()
 		{
 			parserState = ParserStates::STOPPED;
-			if (parseThread.joinable())
-			{
-				parseThread.join();
-			}
 		}
 
 		Utils::QueueLF<Command>& Incoming()
@@ -104,15 +117,9 @@ namespace Utils
 				std::getline(std::cin, input);
 	
 				Command inputCommand(input);
-				if (existingCommands.find(inputCommand.titleCommand) != existingCommands.end())
+				if (callbackCommand.find(inputCommand.titleCommand) != callbackCommand.end())
 				{
-					commandQueue.push_back(inputCommand);
-					
-					if (exitCommands.find(inputCommand.titleCommand) != exitCommands.end())
-					{
-						parserState = ParserStates::STOPPED;
-						break;
-					}
+					callbackCommand[inputCommand.titleCommand]->Execute(inputCommand);
 				}
 			}
 		}

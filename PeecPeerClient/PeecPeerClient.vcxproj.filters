@@ -32,5 +32,8 @@
     <ClInclude Include="PeecServerPeerHandlers.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="PeecCommandHandlers.hpp">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

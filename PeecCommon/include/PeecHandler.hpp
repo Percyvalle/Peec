@@ -18,7 +18,7 @@ namespace Net {
 		Pool::ThreadPool threadPool;
 	public:
 		
-		explicit HandlerMediator(const std::uint8_t& _threadCount = 1) : threadPool{ _threadCount } {}
+		explicit HandlerMediator(const std::uint8_t& _threadCount) : threadPool{ _threadCount } {}
 
 		void RegisterHandler(T _msgType, std::unique_ptr<MessageHandler<T>> _handler) {
 			mapHandler[_msgType] = std::move(_handler);

@@ -20,6 +20,7 @@ void TrackerServer::OnMessage(std::shared_ptr<Net::OwnerMessage<MessageTypes>> _
 
 void TrackerServer::OnConnect(std::shared_ptr<Net::Connection<MessageTypes>> _handleClient)
 {
+	spdlog::info("Client connection: {0}:{1}", _handleClient->GetAddressRemote(), _handleClient->GetPortRemote());
 }
 
 void TrackerServer::OnDisconnect(std::shared_ptr<Net::Connection<MessageTypes>> _handleClient)

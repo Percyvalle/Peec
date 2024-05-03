@@ -44,7 +44,7 @@ inline void ServerIMPL::AddRegisteredFile(const std::string& _fileName, const st
 	debugC.push_back(_fileName);
 #endif
 }
-
+	 
 inline void ServerIMPL::OnMessage(std::shared_ptr<Net::OwnerMessage<MessageTypes>> _ownMsg)
 {
 	mediator.HandleMessage(_ownMsg);
@@ -52,6 +52,7 @@ inline void ServerIMPL::OnMessage(std::shared_ptr<Net::OwnerMessage<MessageTypes
 
 inline void ServerIMPL::OnConnect(std::shared_ptr<Net::Connection<MessageTypes>> _handleClient)
 {
+	spdlog::info("Client connection: {0}:{1}", _handleClient->GetAddressRemote(), _handleClient->GetPortRemote());
 }
 
 inline void ServerIMPL::OnDisconnect(std::shared_ptr<Net::Connection<MessageTypes>> _handleClient)
