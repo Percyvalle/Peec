@@ -110,7 +110,7 @@ void FileS::PathStruct::GettingFileLength()
     CloseHandle(hFile);
 }
 
-FileS::PathStruct FileS::FileManager::GetWorkingDir() const
+FileS::PathStruct FileS::FileSystemManager::GetWorkingDir() const
 {
     std::wstring pathW;
     pathW.resize(MAX_PATH);
@@ -123,17 +123,55 @@ FileS::PathStruct FileS::FileManager::GetWorkingDir() const
     return FileS::PathStruct(pathA);
 }
 
-bool FileS::FileManager::SetWorkingDir(const PathStruct& _path) const
+bool FileS::FileSystemManager::SetWorkingDir(const PathStruct& _path) const
 {
     return SetCurrentDirectoryW(_path.GetPathW().c_str());
 }
 
-bool FileS::FileManager::DirectoryExists(const PathStruct& _path)
+bool FileS::FileSystemManager::DirectoryExists(const PathStruct& _path)
 {
     return PathIsDirectoryW(_path.GetPathW().c_str());
 }
                                                         
-bool FileS::FileManager::FileExists(const PathStruct& _path)
+bool FileS::FileSystemManager::FileExists(const PathStruct& _path)
 {
     return !_path.IsDirectory() && PathFileExistsW(_path.GetPathW().c_str());
+}
+
+bool FileS::FileIO::Open(const PathStruct& _filePath, std::ios_base::openmode _mode)
+{
+    fileStream.open(_filePath.GetPath(), _mode);
+    return IsOpen();
+}
+
+bool FileS::FileIO::Close()
+{
+    if (IsOpen())
+    {
+        fileStream.close();
+    }
+    return !IsOpen();
+}
+
+bool FileS::FileIO::IsOpen() const
+{
+    return fileStream.is_open();
+}
+
+std::streampos FileS::FileIO::Size()
+{
+    fileStream.seekg(0, std::ios::end);
+    std::streampos fileSize = fileStream.tellg();
+    fileStream.seekg(0, std::ios::beg);
+    return fileSize;
+}
+
+std::istream& FileS::FileIO::Read(char* _str, std::streamsize _size)
+{
+    return fileStream.read(_str, _size);
+}
+
+std::ostream& FileS::FileIO::Write(const char* _str, std::streamsize _size)
+{
+    return fileStream.write(_str, _size);
 }

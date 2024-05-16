@@ -6,6 +6,8 @@
 
 #include "PeecServerFileContainer.hpp"
 
+#include <fstream>
+
 class DownloadHandler : public Net::MessageHandler<MessageTypes>
 {
 public:
@@ -17,9 +19,37 @@ public:
 	{
 		JSON jsonRequestData = JSON::parse(_msg->remoteMsg.GetStrData());
 
+		if (!Utils::ValidateExistsVarJSON(jsonRequestData, "FILENAME", nullptr))
+		{
+			return Net::MessageFactory<MessageTypes>::CreateMessage(MessageTypes::DownloadFile,
+																	MessageStatus::FAILURE,
+																	JSON::parse(R"({"MESSAGE":"Invalidate data"})").dump());
+		}
+
 		if (containerServer->find(jsonRequestData["FILENAME"]) != containerServer->end())
 		{
-			spdlog::info("Found");
+			FileS::PathStruct path(containerServer->at(jsonRequestData["FILENAME"]).filePath);
+
+			FileS::FileIO file(path, std::ios::in | std::ios::binary);
+			if (file.IsOpen())
+			{
+				std::vector<std::uint8_t> buffer(file.Size());
+
+				file.Read(reinterpret_cast<char*>(buffer.data()), buffer.size());
+				return Net::MessageFactory<MessageTypes>::CreateMessage(MessageTypes::DownloadFile, MessageStatus::SUCCESS, buffer);
+			}
+			else
+			{
+				return Net::MessageFactory<MessageTypes>::CreateMessage(MessageTypes::DownloadFile,
+																		MessageStatus::FAILURE,
+																		JSON::parse(R"({"MESSAGE":"Open is failed"})").dump());
+			}
+		} 
+		else
+		{
+			return Net::MessageFactory<MessageTypes>::CreateMessage(MessageTypes::DownloadFile,
+																	MessageStatus::FAILURE,
+																	JSON::parse(R"({"MESSAGE":"File not registered"})").dump());
 		}
 
 		return Net::MessageFactory<MessageTypes>::CreateMessage(MessageTypes::DownloadFile, MessageStatus::FAILURE);

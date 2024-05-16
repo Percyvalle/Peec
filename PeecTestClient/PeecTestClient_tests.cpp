@@ -140,7 +140,7 @@ TEST(TestFileManager, SetWorkingDir)
 {
 	FileS::PathStruct workdir("C:\\");
 
-	FileS::FileManager manager;
+	FileS::FileSystemManager manager;
 	EXPECT_EQ(manager.SetWorkingDir(workdir), true);
 }
 
@@ -148,7 +148,7 @@ TEST(TestFileManager, GetWorkingDir)
 {
 	FileS::PathStruct workdir("C:\\");
 
-	FileS::FileManager manager;
+	FileS::FileSystemManager manager;
 	manager.SetWorkingDir(workdir);
 	EXPECT_EQ(manager.GetWorkingDir().GetPath(), workdir.GetPath());
 }
@@ -157,7 +157,7 @@ TEST(TestFileManager, DirectoryExists)
 {
 	FileS::PathStruct workdir("C:\\");
 
-	FileS::FileManager manager;
+	FileS::FileSystemManager manager;
 	EXPECT_EQ(manager.DirectoryExists(workdir), true);
 }
 
@@ -165,6 +165,6 @@ TEST(TestFileManager, DirectoryNotExists)
 {
 	FileS::PathStruct workdir("C:\\NotExists");
 
-	FileS::FileManager manager;
+	FileS::FileSystemManager manager;
 	EXPECT_EQ(manager.DirectoryExists(workdir), false);
 }

@@ -57,6 +57,16 @@ namespace Net {
 			}
 		}
 
+		std::string GetAddress() const
+		{
+			return connection->GetAddressLocal();
+		}
+
+		std::uint16_t GetPort() const
+		{
+			return connection->GetPortLocal();
+		}
+
 		Utils::QueueLF<std::shared_ptr<OwnerMessage<T>>>& Incoming() {
 			return msgQueueIn;
 		}

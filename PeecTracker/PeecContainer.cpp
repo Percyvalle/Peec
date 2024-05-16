@@ -4,7 +4,7 @@ void ContainerTackerServer::AddFile(const FileInfo& _file, const PeerInfo& _loca
 {
 	std::lock_guard<std::mutex> lock(contanerMtx);
 
-	if (!FileIsExist(_file.fileName))
+	if (!FileExistsOnServer(_file.fileName))
 	{
 		files[_file.fileName] = _file;
 		filesList.push_front(_file.fileName);
@@ -16,7 +16,7 @@ void ContainerTackerServer::AddFile(const FileInfo& _file, const PeerInfo& _loca
 	}
 }
 
-bool ContainerTackerServer::FileIsExist(const std::string& _filename)
+bool ContainerTackerServer::FileExistsOnServer(const std::string& _filename)
 {
 	return files.find(_filename) != files.end();
 }

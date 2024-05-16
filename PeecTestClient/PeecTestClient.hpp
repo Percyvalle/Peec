@@ -28,6 +28,8 @@ public:
 		JSON jsonMsg;
 		jsonMsg["FILENAME"] = "THISFILE";
 		jsonMsg["FILELENGTH"] = 32;
+		jsonMsg["ADDRESS"] = GetAddress();
+		jsonMsg["PORT"] = GetPort();
 		msg << jsonMsg.dump();
 
 		Send(msg);

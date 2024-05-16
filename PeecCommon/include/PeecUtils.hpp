@@ -10,4 +10,6 @@ namespace Utils
 	DWORD GetCountCPU();
 
 	std::string ConvertStatusToStr(MessageStatus _status);
+
+	bool ValidateExistsVarJSON(JSON _json, ...);
 }

@@ -113,6 +113,8 @@ namespace Utils
 		{
 			while (parserState == ParserStates::RUNNING)
 			{
+				std::cout << "\033[1;32m>>>\033[0m";
+
 				std::string input;
 				std::getline(std::cin, input);
 	

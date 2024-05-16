@@ -45,11 +45,13 @@ void CommandRegistration(const Utils::Command& _command, std::shared_ptr<ClientI
 	{
 		FileS::PathStruct path(_command.arguments[0]);
 
-		if (FileS::FileManager::FileExists(path))
+		if (FileS::FileSystemManager::FileExists(path))
 		{
 			JSON jsonReq;
 			jsonReq["FILENAME"] = path.GetPathFileName();
 			jsonReq["FILELENGTH"] = path.GetFileLenght();
+			jsonReq["ADDRESS"] = _speer->GetAddress();
+			jsonReq["PORT"] = _speer->GetPort();
 
 			Net::OWN_MSG_PTR<MessageTypes> msg = _cpeer->POSTRequest(MessageTypes::FileRegistration, jsonReq);
 			PrintReply(msg->remoteMsg.GetStrData(), Utils::ConvertStatusToStr(msg->remoteMsg.GetStatus()), static_cast<uint32_t>(msg->remoteMsg.GetType()));
@@ -65,20 +67,48 @@ void CommandRegistration(const Utils::Command& _command, std::shared_ptr<ClientI
 		}
 	}
 }
-
+// "C:\Users\goman\Desktop\Learning.exe"
+// "C:\Users\goman\Desktop\HelloWorld.txt"
 void CommandDownloadFile(const Utils::Command& _command, std::shared_ptr<ClientIMPL> _cpeer)
 {
 	if (!_command.arguments.empty())
 	{
+		FileS::PathStruct path(_command.arguments[0]);
+
 		JSON jsonReq;
-		jsonReq["FILENAME"] = _command.arguments[0];
+		jsonReq["FILENAME"] = path.GetPathFileName();
 
-		ClientIMPL cPeerr;
-		cPeerr.Connect("127.0.0.1", static_cast<uint16_t>(std::stoi(_command.arguments[1])));
+		Net::OWN_MSG_PTR<MessageTypes> msgPorts = _cpeer->POSTRequest(MessageTypes::FileLocation, jsonReq);
+		JSON jsonRespPorts = msgPorts->remoteMsg.GetJSONData();
 
-		Net::OWN_MSG_PTR<MessageTypes> msg = cPeerr.POSTRequest(MessageTypes::DownloadFile, jsonReq);
-		PrintReply(msg->remoteMsg.GetStrData(), Utils::ConvertStatusToStr(msg->remoteMsg.GetStatus()), static_cast<uint32_t>(msg->remoteMsg.GetType()));
-		cPeerr.Disconnect();
+		if (msgPorts->remoteMsg.GetStatus() == MessageStatus::SUCCESS)
+		{
+			ClientIMPL cPeerr;
+			cPeerr.Connect(jsonRespPorts.back()["ADDRESS"], jsonRespPorts.back()["PORT"]);
+
+			Net::OWN_MSG_PTR<MessageTypes> msg = cPeerr.POSTRequest(MessageTypes::DownloadFile, jsonReq);
+		
+			if (msg->remoteMsg.GetStatus() == MessageStatus::SUCCESS)
+			{
+				FileS::FileIO file(path, std::ios::out | std::ios::binary);
+				if (file.IsOpen())
+				{
+					file.Write(reinterpret_cast<const char*>(msg->remoteMsg.body.data.data()), msg->remoteMsg.body.data.size());
+				}
+				else
+				{
+					spdlog::error("Failed writing data to file: {0}", path.GetPathFileName());
+				}
+			}
+			else
+			{
+				spdlog::error("Failed download file: {0}", msg->remoteMsg.GetJSONData()["MESSAGE"]);
+			}
+		}
+		else
+		{
+			spdlog::error("Failed to get port: {0}", jsonRespPorts["MESSAGE"]);
+		}
 	}
 }
 

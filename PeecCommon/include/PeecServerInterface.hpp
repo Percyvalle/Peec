@@ -101,6 +101,16 @@ namespace Net {
 			}
 		}
 
+		std::string GetAddress() const
+		{
+			return acceptor.local_endpoint().address().to_string();
+		}
+
+		std::uint16_t GetPort() const
+		{
+			return acceptor.local_endpoint().port();
+		}
+
 	protected:
 		virtual void OnMessage(std::shared_ptr<Net::OwnerMessage<T>> _ownMsg) = 0;
 

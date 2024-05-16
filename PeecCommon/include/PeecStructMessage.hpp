@@ -36,12 +36,12 @@ namespace Net {
 			header.sizeData = body.data.size();
 		}
 
-		bool IsValidate()
+		bool IsValidate() const
 		{
 			return JSON::accept(GetStrData());
 		}
 
-		std::string GetStrData() 
+		std::string GetStrData() const 
 		{
 			if (!body.data.empty()) {
 				std::string ret;
@@ -54,6 +54,11 @@ namespace Net {
 			return "";
 		}
 
+		JSON GetJSONData() const
+		{
+			return IsValidate() ? JSON::parse(GetStrData()) : JSON();
+		}
+
 		template<typename TypeMsg>
 		Message& operator<<(const TypeMsg& _msg)
 		{
@@ -64,6 +69,20 @@ namespace Net {
 			body.data.resize(startPtr + sizeof(TypeMsg));
 
 			std:memcpy(body.data.data() + startPtr, &_msg, sizeof(TypeMsg));
+
+			header.sizeData = body.data.size();
+
+			return *this;
+		}
+
+		template<>
+		Message& operator<<(const std::vector<std::uint8_t>& _message)
+		{
+			size_t startPtr = body.data.size();
+
+			body.data.resize(startPtr + _message.size());
+
+			std:memcpy(body.data.data() + startPtr, _message.data(), _message.size());
 
 			header.sizeData = body.data.size();
 

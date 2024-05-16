@@ -2,6 +2,8 @@
 
 #include "PeecCommonHeaders.hpp"
 
+#include <fstream>
+
 #include <WinBase.h>
 #include <shlwapi.h>
 
@@ -53,14 +55,36 @@ namespace FileS
 		void Normalize();
 	};
 
+	class FileIO
+	{
+	private:
+		PathStruct filePath;
+		std::fstream fileStream; 
+	
+	public:
+		FileIO() = default;
+		explicit FileIO(const PathStruct& _filePath, std::ios_base::openmode _mode) 
+			: filePath(_filePath), fileStream(_filePath.GetPath(), _mode) {}
+		
+		~FileIO() { Close(); }
+
+		bool Open(const PathStruct& _filePath, std::ios_base::openmode _mode);
+		bool Close();
+		bool IsOpen() const;
+
+		std::streampos Size();
+		std::istream& Read(char* _str, std::streamsize _size);
+		std::ostream& Write(const char* _str, std::streamsize _size);
+	};
+
 	/// <summary>
 	/// 
 	/// </summary>
-	class FileManager
+	class FileSystemManager
 	{
 	public:
-		explicit FileManager() = default;
-		~FileManager() = default;
+		explicit FileSystemManager() = default;
+		~FileSystemManager() = default;
 
 		PathStruct GetWorkingDir() const;
 		bool SetWorkingDir(const PathStruct& _path) const;

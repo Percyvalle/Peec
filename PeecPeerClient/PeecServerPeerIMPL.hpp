@@ -12,6 +12,7 @@ private:
 	Net::HandlerMediator<MessageTypes> mediator;
 	std::shared_ptr<FileContainerMap> container = std::make_shared<FileContainerMap>();
 
+	std::thread executeThread;
 #ifdef _DEBUG
 	std::vector<std::string> debugC;
 #endif
@@ -20,11 +21,41 @@ public:
 	explicit ServerIMPL(const uint16_t& _port, const std::uint8_t& _threadCount) : Net::ServerInterface<MessageTypes>(_port), mediator(_threadCount)
 	{
 		mediator.RegisterHandler(MessageTypes::DownloadFile, std::make_unique<DownloadHandler>(container));
-	};
+	}
+
+	~ServerIMPL()
+	{
+		if (executeThread.joinable())
+		{
+			executeThread.join();
+		}
+	}
 
 #ifdef _DEBUG
 	std::vector<std::string> GetContainer() const { return debugC; }
 #endif
+		
+	void ExecuteUpdateServer(bool _isThread = false) 
+	{
+		std::function executeFun = [this]()
+			{
+				while (true)
+				{
+					Update();
+					CheckClientConnection();
+				}
+			};
+
+		if (_isThread)
+		{
+			executeThread = std::thread(executeFun);
+		}
+		else
+		{
+			executeFun();
+		}
+
+	};
 
 	void AddRegisteredFile(const std::string& _fileName, const std::string& _filePath, const std::size_t& _fileLength);
 
@@ -47,6 +78,11 @@ inline void ServerIMPL::AddRegisteredFile(const std::string& _fileName, const st
 	 
 inline void ServerIMPL::OnMessage(std::shared_ptr<Net::OwnerMessage<MessageTypes>> _ownMsg)
 {
+	if (!_ownMsg->remoteMsg.GetStrData().empty())
+	{
+		spdlog::info("Message Request: {0}", _ownMsg->remoteMsg.GetStrData());
+	}
+
 	mediator.HandleMessage(_ownMsg);
 }
 
@@ -57,4 +93,5 @@ inline void ServerIMPL::OnConnect(std::shared_ptr<Net::Connection<MessageTypes>>
 
 inline void ServerIMPL::OnDisconnect(std::shared_ptr<Net::Connection<MessageTypes>> _handleClient)
 {
+	spdlog::info("Client Disconnect");
 }

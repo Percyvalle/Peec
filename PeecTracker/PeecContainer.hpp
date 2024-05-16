@@ -11,7 +11,7 @@ struct ContainerTackerServer {
 
 	void AddFile(const FileInfo& _file,const PeerInfo& _location);
 
-	bool FileIsExist(const std::string& _filename);
+	bool FileExistsOnServer(const std::string& _filename);
 	bool LocationIsExist(const std::string& _filename, const PeerInfo& _location);
 
 	JSON GetFileLocationJSON(const std::string& _filename);
