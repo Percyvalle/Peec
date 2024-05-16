@@ -55,6 +55,11 @@ nunit-*.xml
 [Rr]eleasePS/
 dlldata.c
 
+# Don't ignore 3dpart
+!./3dpart/include/*
+!./3dpart/libs/Debug/*
+!./3dpart/libs/Release/*
+
 # Benchmark Results
 BenchmarkDotNet.Artifacts/
 
