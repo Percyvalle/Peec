@@ -23,7 +23,7 @@ private:
 		files[_filename].fileLocation.push_back(_location);
 	}
 
-	FileLocationVector& GetFileLocation(const std::string& _filename)
+	const FileLocationVector& GetFileLocation(const std::string& _filename)
 	{
 		return files[_filename].fileLocation;
 	}

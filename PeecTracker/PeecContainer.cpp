@@ -25,7 +25,7 @@ bool ContainerTackerServer::LocationIsExist(const std::string& _filename, const 
 {
 	std::function eqPeer = [&_location](const PeerInfo& peer) { return peer.address == _location.address; };
 	
-	FileLocationVector& fileLocations = GetFileLocation(_filename);
+	const FileLocationVector& fileLocations = GetFileLocation(_filename);
 	return std::find_if(fileLocations.begin(), fileLocations.end(), eqPeer) != fileLocations.end();
 }
 

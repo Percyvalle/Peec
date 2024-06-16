@@ -68,9 +68,13 @@ struct FileLocationHandler : public Net::MessageHandler<MessageTypes>
 		
 		if (containerServer->FileExistsOnServer(jsonRequestData["FILENAME"]))
 		{
+			JSON jsonResponse = containerServer->GetFileLocationJSON(jsonRequestData["FILENAME"]);
+			jsonResponse.push_back(JSON::object());
+			jsonResponse.back()["COUNT_CHUNK"] = containerServer->files[jsonRequestData["FILENAME"]].countChunks;
+
 			return Net::MessageFactory<MessageTypes>::CreateMessage(MessageTypes::FileLocation, 
 																	MessageStatus::SUCCESS, 
-																	containerServer->GetFileLocationJSON(jsonRequestData["FILENAME"]).dump());
+																	jsonResponse.dump());
 		}
 
 		return Net::MessageFactory<MessageTypes>::CreateMessage(MessageTypes::FileLocation, MessageStatus::FAILURE, JSON::parse(R"({"MESSAGE":"File is not exists"})").dump());

@@ -67,8 +67,7 @@ void CommandRegistration(const Utils::Command& _command, std::shared_ptr<ClientI
 		}
 	}
 }
-// "C:\Users\goman\Desktop\Learning.exe"
-// "C:\Users\goman\Desktop\HelloWorld.txt"
+
 void CommandDownloadFile(const Utils::Command& _command, std::shared_ptr<ClientIMPL> _cpeer)
 {
 	if (!_command.arguments.empty())
@@ -83,10 +82,10 @@ void CommandDownloadFile(const Utils::Command& _command, std::shared_ptr<ClientI
 
 		if (msgPorts->remoteMsg.GetStatus() == MessageStatus::SUCCESS)
 		{
-			ClientIMPL cPeerr;
-			cPeerr.Connect(jsonRespPorts.back()["ADDRESS"], jsonRespPorts.back()["PORT"]);
+			ClientIMPL peerConnection;
+			peerConnection.Connect(jsonRespPorts.back()["ADDRESS"], jsonRespPorts.back()["PORT"]);
 
-			Net::OWN_MSG_PTR<MessageTypes> msg = cPeerr.POSTRequest(MessageTypes::DownloadFile, jsonReq);
+			Net::OWN_MSG_PTR<MessageTypes> msg = peerConnection.POSTRequest(MessageTypes::DownloadFile, jsonReq);
 		
 			if (msg->remoteMsg.GetStatus() == MessageStatus::SUCCESS)
 			{

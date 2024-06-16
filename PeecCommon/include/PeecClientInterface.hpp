@@ -18,7 +18,7 @@ namespace Net {
 		ClientInterface() = default;
 		~ClientInterface() { Disconnect(); }
 
-		void Connect(const std::string& _host, const uint16_t _port) {
+		void Connect(const std::string& _host, const uint16_t& _port) {
 			asio::ip::tcp::resolver resolver(connectContext);
 			asio::ip::tcp::resolver::results_type endpoint = resolver.resolve(_host, std::to_string(_port));
 

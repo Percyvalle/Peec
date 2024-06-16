@@ -23,7 +23,7 @@ public:
 		{
 			return Net::MessageFactory<MessageTypes>::CreateMessage(MessageTypes::DownloadFile,
 																	MessageStatus::FAILURE,
-																	JSON::parse(R"({"MESSAGE":"Invalidate data"})").dump());
+																	JsonMSGDump("MESSAGE", "Invalidate data"));
 		}
 
 		if (containerServer->find(jsonRequestData["FILENAME"]) != containerServer->end())
@@ -42,15 +42,9 @@ public:
 			{
 				return Net::MessageFactory<MessageTypes>::CreateMessage(MessageTypes::DownloadFile,
 																		MessageStatus::FAILURE,
-																		JSON::parse(R"({"MESSAGE":"Open is failed"})").dump());
+																		JsonMSGDump("MESSAGE", "Open is failed"));
 			}
 		} 
-		else
-		{
-			return Net::MessageFactory<MessageTypes>::CreateMessage(MessageTypes::DownloadFile,
-																	MessageStatus::FAILURE,
-																	JSON::parse(R"({"MESSAGE":"File not registered"})").dump());
-		}
 
 		return Net::MessageFactory<MessageTypes>::CreateMessage(MessageTypes::DownloadFile, MessageStatus::FAILURE);
 	}

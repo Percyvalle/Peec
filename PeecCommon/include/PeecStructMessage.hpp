@@ -8,9 +8,9 @@
 
 namespace Net {
 
-	template<typename T>
+	template<typename TypeMsg>
 	struct HeaderMessage {
-		T type;
+		TypeMsg type;
 		MessageStatus status;
 		uint32_t sizeData = 0;
 	};

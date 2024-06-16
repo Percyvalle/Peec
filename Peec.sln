@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PeecTestClient", "PeecTestC
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PeecPeerClient", "PeecPeerClient\PeecPeerClient.vcxproj", "{549FEC26-255A-49DE-ACA5-ACEB7D93C663}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xProject", "..\xProjectLib\xProject\xProject.vcxproj", "{6256F72E-07C0-4294-A209-439C3E8F955C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -51,6 +53,14 @@ Global
 		{549FEC26-255A-49DE-ACA5-ACEB7D93C663}.Release|x64.Build.0 = Release|x64
 		{549FEC26-255A-49DE-ACA5-ACEB7D93C663}.Release|x86.ActiveCfg = Release|Win32
 		{549FEC26-255A-49DE-ACA5-ACEB7D93C663}.Release|x86.Build.0 = Release|Win32
+		{6256F72E-07C0-4294-A209-439C3E8F955C}.Debug|x64.ActiveCfg = Debug|x64
+		{6256F72E-07C0-4294-A209-439C3E8F955C}.Debug|x64.Build.0 = Debug|x64
+		{6256F72E-07C0-4294-A209-439C3E8F955C}.Debug|x86.ActiveCfg = Debug|Win32
+		{6256F72E-07C0-4294-A209-439C3E8F955C}.Debug|x86.Build.0 = Debug|Win32
+		{6256F72E-07C0-4294-A209-439C3E8F955C}.Release|x64.ActiveCfg = Release|x64
+		{6256F72E-07C0-4294-A209-439C3E8F955C}.Release|x64.Build.0 = Release|x64
+		{6256F72E-07C0-4294-A209-439C3E8F955C}.Release|x86.ActiveCfg = Release|Win32
+		{6256F72E-07C0-4294-A209-439C3E8F955C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

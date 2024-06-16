@@ -5,6 +5,9 @@
 #include "PeecCommonHeaders.hpp"
 #include "PeecMessageStatus.hpp"
 
+#define JsonMSG(key, text) JSON::parse("{\"" + std::string(key) + "\":\"" + std::string(text) + "\"}")
+#define JsonMSGDump(key, text) JSON::parse("{\"" + std::string(key) + "\":\"" + std::string(text) + "\"}").dump()
+
 namespace Utils 
 {
 	DWORD GetCountCPU();
