@@ -1,6 +1,11 @@
 #include <iostream>
+#include <memory>
 
+#include "PeecClientPeerIMPL.hpp"
+#include "PeecServerPeerIMPL.hpp"
 #include "PeecCommandHandlers.hpp"
+
+#include <utils/CommandParser.hpp>
 
 int main(int argc,char** argv)
 {

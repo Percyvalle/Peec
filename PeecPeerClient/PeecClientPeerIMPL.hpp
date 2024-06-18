@@ -1,23 +1,25 @@
 #pragma once
 
-#include <PeecClientInterface.hpp>
-#include <PeecServerInterface.hpp>
-#include <PeecMessageTypes.hpp>
-#include <PeecFilesystem.hpp>
+#include <network/ClientInterface.hpp>
+#include <network/ServerInterface.hpp>
+#include <filesystem/FileSystem.hpp>
 
-class ClientIMPL : public Net::ClientInterface<MessageTypes>
+#include <PeecMessageTypes.hpp>
+#include <PeecMessageStatus.hpp>
+
+class ClientIMPL : public Net::ClientInterface<MessageTypes, MessageStatus>
 {
 public:
 	
-	Net::OWN_MSG_PTR<MessageTypes> GETRequest(MessageTypes _type);
-	Net::OWN_MSG_PTR<MessageTypes> POSTRequest(MessageTypes _type, const JSON& _data);
+	Net::OWN_MSG_PTR<MessageTypes, MessageStatus> GETRequest(MessageTypes _type);
+	Net::OWN_MSG_PTR<MessageTypes, MessageStatus> POSTRequest(MessageTypes _type, const JSON& _data);
 
-	Net::OWN_MSG_PTR<MessageTypes> WaitingResponse();
+	Net::OWN_MSG_PTR<MessageTypes, MessageStatus> WaitingResponse();
 };
 
-inline Net::OWN_MSG_PTR<MessageTypes> ClientIMPL::GETRequest(MessageTypes _type)
+inline Net::OWN_MSG_PTR<MessageTypes, MessageStatus> ClientIMPL::GETRequest(MessageTypes _type)
 {
-	Net::Message<MessageTypes> msg;
+	Net::Message<MessageTypes, MessageStatus> msg;
 	msg.SetType(_type);
 	
 	Send(msg);
@@ -25,9 +27,9 @@ inline Net::OWN_MSG_PTR<MessageTypes> ClientIMPL::GETRequest(MessageTypes _type)
 	return WaitingResponse();
 }
 
-inline Net::OWN_MSG_PTR<MessageTypes> ClientIMPL::POSTRequest(MessageTypes _type, const JSON& _data)
+inline Net::OWN_MSG_PTR<MessageTypes, MessageStatus> ClientIMPL::POSTRequest(MessageTypes _type, const JSON& _data)
 {
-	Net::Message<MessageTypes> msg;
+	Net::Message<MessageTypes, MessageStatus> msg;
 	msg.SetType(_type);
 	msg << _data.dump();
 
@@ -36,7 +38,7 @@ inline Net::OWN_MSG_PTR<MessageTypes> ClientIMPL::POSTRequest(MessageTypes _type
 	return WaitingResponse();
 }
 
-inline Net::OWN_MSG_PTR<MessageTypes> ClientIMPL::WaitingResponse()
+inline Net::OWN_MSG_PTR<MessageTypes, MessageStatus> ClientIMPL::WaitingResponse()
 {
 	Incoming().wait();
 	return Incoming().pop_front();

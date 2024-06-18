@@ -1,6 +1,6 @@
 #include "PeecTrackerServer.hpp"
 
-TrackerServer::TrackerServer(const uint16_t& _port, const std::uint8_t& _countThread = 1) : Net::ServerInterface<MessageTypes>(_port), mediator(_countThread)
+TrackerServer::TrackerServer(const uint16_t& _port, const std::uint8_t& _countThread = 1) : Net::ServerInterface<MessageTypes, MessageStatus>(_port), mediator(_countThread)
 {
 	mediator.RegisterHandler(MessageTypes::ServerPing, std::make_unique<ServerPingHandler>());
 	mediator.RegisterHandler(MessageTypes::FileLocation, std::make_unique<FileLocationHandler>(container));
@@ -8,7 +8,7 @@ TrackerServer::TrackerServer(const uint16_t& _port, const std::uint8_t& _countTh
 	mediator.RegisterHandler(MessageTypes::GetFileList, std::make_unique<GetFileListHandler>(container));
 }
 
-void TrackerServer::OnMessage(std::shared_ptr<Net::OwnerMessage<MessageTypes>> _ownMsg)
+void TrackerServer::OnMessage(std::shared_ptr<Net::OwnerMessage<MessageTypes, MessageStatus>> _ownMsg)
 {
 	if (!_ownMsg->remoteMsg.GetStrData().empty())
 	{
@@ -18,12 +18,12 @@ void TrackerServer::OnMessage(std::shared_ptr<Net::OwnerMessage<MessageTypes>> _
 	mediator.HandleMessage(_ownMsg);
 }
 
-void TrackerServer::OnConnect(std::shared_ptr<Net::Connection<MessageTypes>> _handleClient)
+void TrackerServer::OnConnect(std::shared_ptr<Net::Connection<MessageTypes, MessageStatus>> _handleClient)
 {
 	spdlog::info("Client connection: {0}:{1}", _handleClient->GetAddressRemote(), _handleClient->GetPortRemote());
 }
 
-void TrackerServer::OnDisconnect(std::shared_ptr<Net::Connection<MessageTypes>> _handleClient)
+void TrackerServer::OnDisconnect(std::shared_ptr<Net::Connection<MessageTypes, MessageStatus>> _handleClient)
 {
 	spdlog::info("Client Disconnect");
 }

@@ -20,26 +20,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\PeecCommon_main.cpp" />
-    <ClCompile Include="src\PeecFilesystem.cpp" />
-    <ClCompile Include="src\PeecThreadPool.cpp" />
-    <ClCompile Include="src\PeecUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\PeecClientInterface.hpp" />
     <ClInclude Include="include\PeecCommonHeaders.hpp" />
-    <ClInclude Include="include\PeecConnection.hpp" />
-    <ClInclude Include="include\PeecFilesystem.hpp" />
-    <ClInclude Include="include\PeecHandler.hpp" />
     <ClInclude Include="include\PeecMessageStatus.hpp" />
     <ClInclude Include="include\PeecMessageTypes.hpp" />
-    <ClInclude Include="include\PeecObserverInterface.hpp" />
-    <ClInclude Include="include\PeecCommandParser.hpp" />
-    <ClInclude Include="include\PeecQeueuLockfree.hpp" />
-    <ClInclude Include="include\PeecQueue.hpp" />
-    <ClInclude Include="include\PeecServerInterface.hpp" />
-    <ClInclude Include="include\PeecStructMessage.hpp" />
-    <ClInclude Include="include\PeecThreadPool.hpp" />
-    <ClInclude Include="include\PeecUtils.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -129,7 +114,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINSOCK_DEPRECATED_NO_WARNINGS;_WIN32_WINNT=_WIN32_WINNT_WIN10;_DISABLE_VECTOR_ANNOTATION;_DISABLE_STRING_ANNOTATION;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)3dpart\include;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)3dpart\include;$(SolutionDir)..\xProjectLib\xProject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -146,7 +131,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINSOCK_DEPRECATED_NO_WARNINGS;_WIN32_WINNT=_WIN32_WINNT_WIN10;_DISABLE_VECTOR_ANNOTATION;_DISABLE_STRING_ANNOTATION;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)3dpart\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)3dpart\include;$(SolutionDir)..\xProjectLib\xProject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>

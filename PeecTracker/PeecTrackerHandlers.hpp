@@ -1,42 +1,43 @@
 #pragma once
 
-#include <PeecHandler.hpp>
+#include <network/Handler.hpp>
+#include <filesystem/FileSystem.hpp>
+
 #include <PeecMessageTypes.hpp>
-#include <PeecCommonHeaders.hpp>
-#include <PeecFilesystem.hpp>
+#include <PeecMessageStatus.hpp>
 
 #include "PeecContainer.hpp"
 
-struct ServerPingHandler : public Net::MessageHandler<MessageTypes> 
+struct ServerPingHandler : public Net::MessageHandler<MessageTypes, MessageStatus> 
 {
-	Net::Message<MessageTypes> handle(Net::OWN_MSG_PTR<MessageTypes> _msg) override
+	Net::Message<MessageTypes, MessageStatus> handle(Net::OWN_MSG_PTR<MessageTypes, MessageStatus> _msg) override
 	{
-		return Net::MessageFactory<MessageTypes>::CreateMessage(MessageTypes::ServerPing, MessageStatus::SUCCESS);
+		return Net::MessageFactory<MessageTypes, MessageStatus>::CreateMessage(MessageTypes::ServerPing, MessageStatus::SUCCESS);
 	}
 };
 
-struct FileRegistrationHandler : public Net::MessageHandler<MessageTypes>
+struct FileRegistrationHandler : public Net::MessageHandler<MessageTypes, MessageStatus>
 {
 	std::shared_ptr<ContainerTackerServer> containerServer;
 
 	explicit FileRegistrationHandler(std::shared_ptr<ContainerTackerServer> _containerServer) : containerServer(_containerServer) {}
 
-	Net::Message<MessageTypes> handle(Net::OWN_MSG_PTR<MessageTypes> _msg) override
+	Net::Message<MessageTypes, MessageStatus> handle(Net::OWN_MSG_PTR<MessageTypes, MessageStatus> _msg) override
 	{
 		JSON jsonRequestData = JSON::parse(_msg->remoteMsg.GetStrData());
 
 		if (!Utils::ValidateExistsVarJSON(jsonRequestData, "FILENAME", "FILELENGTH", "ADDRESS", "PORT", nullptr))
 		{
-			return Net::MessageFactory<MessageTypes>::CreateMessage(MessageTypes::FileRegistration,
-																	MessageStatus::FAILURE,
-																	JSON::parse(R"({"MESSAGE":"Invalidate data"})").dump());
+			return Net::MessageFactory<MessageTypes, MessageStatus>::CreateMessage(MessageTypes::FileRegistration,
+																				   MessageStatus::FAILURE,
+																				   JSON::parse(R"({"MESSAGE":"Invalidate data"})").dump());
 		}
 
 		if (containerServer->FileExistsOnServer(jsonRequestData["FILENAME"]))
 		{
-			return Net::MessageFactory<MessageTypes>::CreateMessage(MessageTypes::FileRegistration, 
-																	MessageStatus::FAILURE, 
-																	JSON::parse(R"({"MESSAGE":"The file is already registered"})").dump());
+			return Net::MessageFactory<MessageTypes, MessageStatus>::CreateMessage(MessageTypes::FileRegistration,
+																				   MessageStatus::FAILURE, 
+																				   JSON::parse(R"({"MESSAGE":"The file is already registered"})").dump());
 		}
 
 		std::size_t countChunks = CalculateChunkCount(jsonRequestData["FILELENGTH"]);
@@ -45,25 +46,25 @@ struct FileRegistrationHandler : public Net::MessageHandler<MessageTypes>
 
 		containerServer->AddFile(newFile, newPeer);
 
-		return Net::MessageFactory<MessageTypes>::CreateMessage(MessageTypes::FileRegistration, MessageStatus::SUCCESS);
+		return Net::MessageFactory<MessageTypes, MessageStatus>::CreateMessage(MessageTypes::FileRegistration, MessageStatus::SUCCESS);
 	}
 };
 
-struct FileLocationHandler : public Net::MessageHandler<MessageTypes> 
+struct FileLocationHandler : public Net::MessageHandler<MessageTypes, MessageStatus>
 {
 	std::shared_ptr<ContainerTackerServer> containerServer;
 
 	explicit FileLocationHandler(std::shared_ptr<ContainerTackerServer> _containerServer) : containerServer(_containerServer) {}
 
-	Net::Message<MessageTypes> handle(Net::OWN_MSG_PTR<MessageTypes> _msg) override
+	Net::Message<MessageTypes, MessageStatus> handle(Net::OWN_MSG_PTR<MessageTypes, MessageStatus> _msg) override
 	{
 		JSON jsonRequestData = JSON::parse(_msg->remoteMsg.GetStrData());
 		
 		if (!Utils::ValidateExistsVarJSON(jsonRequestData, "FILENAME", nullptr))
 		{
-			return Net::MessageFactory<MessageTypes>::CreateMessage(MessageTypes::FileLocation,
-																	MessageStatus::FAILURE,
-																	JSON::parse(R"({"MESSAGE":"Invalidate data"})").dump());
+			return Net::MessageFactory<MessageTypes, MessageStatus>::CreateMessage(MessageTypes::FileLocation,
+																				   MessageStatus::FAILURE,
+																				   JSON::parse(R"({"MESSAGE":"Invalidate data"})").dump());
 		}
 		
 		if (containerServer->FileExistsOnServer(jsonRequestData["FILENAME"]))
@@ -72,27 +73,27 @@ struct FileLocationHandler : public Net::MessageHandler<MessageTypes>
 			jsonResponse.push_back(JSON::object());
 			jsonResponse.back()["COUNT_CHUNK"] = containerServer->files[jsonRequestData["FILENAME"]].countChunks;
 
-			return Net::MessageFactory<MessageTypes>::CreateMessage(MessageTypes::FileLocation, 
-																	MessageStatus::SUCCESS, 
-																	jsonResponse.dump());
+			return Net::MessageFactory<MessageTypes, MessageStatus>::CreateMessage(MessageTypes::FileLocation,
+																				   MessageStatus::SUCCESS, 
+																				   jsonResponse.dump());
 		}
 
-		return Net::MessageFactory<MessageTypes>::CreateMessage(MessageTypes::FileLocation, MessageStatus::FAILURE, JSON::parse(R"({"MESSAGE":"File is not exists"})").dump());
+		return Net::MessageFactory<MessageTypes, MessageStatus>::CreateMessage(MessageTypes::FileLocation, MessageStatus::FAILURE, JSON::parse(R"({"MESSAGE":"File is not exists"})").dump());
 	}
 };
 
-struct GetFileListHandler : public Net::MessageHandler<MessageTypes>
+struct GetFileListHandler : public Net::MessageHandler<MessageTypes, MessageStatus>
 {
 	std::shared_ptr<ContainerTackerServer> containerServer;
 
 	explicit GetFileListHandler(std::shared_ptr<ContainerTackerServer> _containerServer) : containerServer(_containerServer) {}
 
-	Net::Message<MessageTypes> handle(Net::OWN_MSG_PTR<MessageTypes> _msg) override
+	Net::Message<MessageTypes, MessageStatus> handle(Net::OWN_MSG_PTR<MessageTypes, MessageStatus> _msg) override
 	{
 		if (!containerServer->filesList.empty())
 		{
-			return Net::MessageFactory<MessageTypes>::CreateMessage(MessageTypes::GetFileList, MessageStatus::SUCCESS, containerServer->GetFilesJSON().dump());
+			return Net::MessageFactory<MessageTypes, MessageStatus>::CreateMessage(MessageTypes::GetFileList, MessageStatus::SUCCESS, containerServer->GetFilesJSON().dump());
 		}
-		return Net::MessageFactory<MessageTypes>::CreateMessage(MessageTypes::GetFileList, MessageStatus::FAILURE);
+		return Net::MessageFactory<MessageTypes, MessageStatus>::CreateMessage(MessageTypes::GetFileList, MessageStatus::FAILURE);
 	}
 };

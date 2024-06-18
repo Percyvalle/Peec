@@ -1,8 +1,9 @@
 #include <gtest/gtest.h>
 
 #include "PeecTestClient.hpp"
-#include "PeecQeueuLockfree.hpp"
-#include "PeecFilesystem.hpp"
+
+#include <collections/QeueuLockfree.hpp>
+#include <filesystem/FileSystem.hpp>
 
 class TestClientFixture : public testing::Test
 {
