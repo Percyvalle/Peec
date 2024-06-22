@@ -18,13 +18,4 @@ struct FileContainer
 	}
 };
 
-// Meybe unused
-//struct FileContainerHash
-//{
-//	std::size_t operator()(const FileContainer& _fc) const
-//	{
-//		return std::hash<std::string>{}(_fc.filePath);
-//	}
-//};
-
 using FileContainerMap = std::unordered_map<std::string, FileContainer>;

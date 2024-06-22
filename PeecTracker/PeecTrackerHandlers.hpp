@@ -30,14 +30,14 @@ struct FileRegistrationHandler : public Net::MessageHandler<MessageTypes, Messag
 		{
 			return Net::MessageFactory<MessageTypes, MessageStatus>::CreateMessage(MessageTypes::FileRegistration,
 																				   MessageStatus::FAILURE,
-																				   JSON::parse(R"({"MESSAGE":"Invalidate data"})").dump());
+																				   JsonMSGDump("MESSAGE", "Invalidate data"));
 		}
 
 		if (containerServer->FileExistsOnServer(jsonRequestData["FILENAME"]))
 		{
 			return Net::MessageFactory<MessageTypes, MessageStatus>::CreateMessage(MessageTypes::FileRegistration,
-																				   MessageStatus::FAILURE, 
-																				   JSON::parse(R"({"MESSAGE":"The file is already registered"})").dump());
+																				   MessageStatus::FAILURE,
+																				   JsonMSGDump("MESSAGE", "The file is already registered"));
 		}
 
 		std::size_t countChunks = CalculateChunkCount(jsonRequestData["FILELENGTH"]);
@@ -64,7 +64,7 @@ struct FileLocationHandler : public Net::MessageHandler<MessageTypes, MessageSta
 		{
 			return Net::MessageFactory<MessageTypes, MessageStatus>::CreateMessage(MessageTypes::FileLocation,
 																				   MessageStatus::FAILURE,
-																				   JSON::parse(R"({"MESSAGE":"Invalidate data"})").dump());
+																				   JsonMSGDump("MESSAGE", "Invalidate data"));
 		}
 		
 		if (containerServer->FileExistsOnServer(jsonRequestData["FILENAME"]))
@@ -78,7 +78,7 @@ struct FileLocationHandler : public Net::MessageHandler<MessageTypes, MessageSta
 																				   jsonResponse.dump());
 		}
 
-		return Net::MessageFactory<MessageTypes, MessageStatus>::CreateMessage(MessageTypes::FileLocation, MessageStatus::FAILURE, JSON::parse(R"({"MESSAGE":"File is not exists"})").dump());
+		return Net::MessageFactory<MessageTypes, MessageStatus>::CreateMessage(MessageTypes::FileLocation, MessageStatus::FAILURE, JsonMSGDump("MESSAGE", "File is not exists"));
 	}
 };
 

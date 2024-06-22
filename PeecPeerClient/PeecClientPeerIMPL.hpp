@@ -11,23 +11,23 @@ class ClientIMPL : public Net::ClientInterface<MessageTypes, MessageStatus>
 {
 public:
 	
-	Net::OWN_MSG_PTR<MessageTypes, MessageStatus> GETRequest(MessageTypes _type);
-	Net::OWN_MSG_PTR<MessageTypes, MessageStatus> POSTRequest(MessageTypes _type, const JSON& _data);
+	Net::OWN_MSG_PTR<MessageTypes, MessageStatus> GETRequest(MessageTypes _type, bool _wait);
+	Net::OWN_MSG_PTR<MessageTypes, MessageStatus> POSTRequest(MessageTypes _type, const JSON& _data, bool _wait);
 
 	Net::OWN_MSG_PTR<MessageTypes, MessageStatus> WaitingResponse();
 };
 
-inline Net::OWN_MSG_PTR<MessageTypes, MessageStatus> ClientIMPL::GETRequest(MessageTypes _type)
+[[maybe_unused]] inline Net::OWN_MSG_PTR<MessageTypes, MessageStatus> ClientIMPL::GETRequest(MessageTypes _type, bool _wait = true)
 {
 	Net::Message<MessageTypes, MessageStatus> msg;
 	msg.SetType(_type);
 	
 	Send(msg);
 
-	return WaitingResponse();
+	return _wait ? WaitingResponse() : nullptr;
 }
 
-inline Net::OWN_MSG_PTR<MessageTypes, MessageStatus> ClientIMPL::POSTRequest(MessageTypes _type, const JSON& _data)
+[[maybe_unused]] inline Net::OWN_MSG_PTR<MessageTypes, MessageStatus> ClientIMPL::POSTRequest(MessageTypes _type, const JSON& _data, bool _wait = true)
 {
 	Net::Message<MessageTypes, MessageStatus> msg;
 	msg.SetType(_type);
@@ -35,7 +35,7 @@ inline Net::OWN_MSG_PTR<MessageTypes, MessageStatus> ClientIMPL::POSTRequest(Mes
 
 	Send(msg);
 
-	return WaitingResponse();
+	return _wait ? WaitingResponse() : nullptr;
 }
 
 inline Net::OWN_MSG_PTR<MessageTypes, MessageStatus> ClientIMPL::WaitingResponse()
