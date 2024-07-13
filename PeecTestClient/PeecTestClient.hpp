@@ -3,15 +3,14 @@
 #include <network/ClientInterface.hpp>
 #include <utils/Utils.hpp>
 
-#include <PeecMessageTypes.hpp>
-#include <PeecMessageStatus.hpp>
+#include <PeecStructMessage.hpp>
 
-class TestClient : public Net::ClientInterface<MessageTypes, MessageStatus> 
+class TestClient : public Net::ClientInterface<Net::PeecMessage> 
 {
 public:
-	Net::OWN_MSG_PTR<MessageTypes, MessageStatus> RequestServerPing()
+	Net::OWN_MSG_PTR<Net::PeecMessage> RequestServerPing()
 	{
-		Net::Message<MessageTypes, MessageStatus> msg;
+		Net::PeecMessage msg;
 
 		msg.SetType(MessageTypes::ServerPing);
 
@@ -20,9 +19,9 @@ public:
 		return WaitingResponse();
 	}
 
-	Net::OWN_MSG_PTR<MessageTypes, MessageStatus> RequestFileRegistration()
+	Net::OWN_MSG_PTR<Net::PeecMessage> RequestFileRegistration()
 	{
-		Net::Message<MessageTypes, MessageStatus> msg;
+		Net::PeecMessage msg;
 
 		msg.SetType(MessageTypes::FileRegistration);
 
@@ -38,9 +37,9 @@ public:
 		return WaitingResponse();
 	}
 
-	Net::OWN_MSG_PTR<MessageTypes, MessageStatus> RequestFileLocation()
+	Net::OWN_MSG_PTR<Net::PeecMessage> RequestFileLocation()
 	{
-		Net::Message<MessageTypes, MessageStatus> msg;
+		Net::PeecMessage msg;
 
 		msg.SetType(MessageTypes::FileLocation);
 
@@ -53,9 +52,9 @@ public:
 		return WaitingResponse();
 	}
 
-	Net::OWN_MSG_PTR<MessageTypes, MessageStatus> RequestGetFilesList()
+	Net::OWN_MSG_PTR<Net::PeecMessage> RequestGetFilesList()
 	{
-		Net::Message<MessageTypes, MessageStatus> msg;
+		Net::PeecMessage msg;
 
 		msg.SetType(MessageTypes::GetFileList);
 
@@ -65,7 +64,7 @@ public:
 	}
 
 
-	Net::OWN_MSG_PTR<MessageTypes, MessageStatus> WaitingResponse()
+	Net::OWN_MSG_PTR<Net::PeecMessage> WaitingResponse()
 	{
 		Incoming().wait();
 		return Incoming().pop_front();

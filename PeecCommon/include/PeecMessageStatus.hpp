@@ -4,6 +4,6 @@
 
 enum class MessageStatus : uint32_t
 {
-	SUCCESS,
-	FAILURE
+	SUCCESS = 200,
+	FAILURE = 201
 };

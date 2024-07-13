@@ -29,5 +29,8 @@
     <ClInclude Include="include\PeecCommonHeaders.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="include\PeecStructMessage.hpp">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

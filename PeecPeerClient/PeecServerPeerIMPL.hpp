@@ -6,10 +6,12 @@
 #include "PeecServerPeerHandlers.hpp"
 #include "PeecServerFileContainer.hpp"
 
-class ServerIMPL : public Net::ServerInterface<MessageTypes, MessageStatus>
+#include <PeecStructMessage.hpp>
+
+class ServerIMPL : public Net::ServerInterface<Net::PeecMessage>
 {
 private:
-	Net::HandlerMediator<MessageTypes, MessageStatus> mediator;
+	Net::HandlerMediator<Net::PeecMessage, MessageTypes> mediator;
 	std::shared_ptr<FileContainerMap> container = std::make_shared<FileContainerMap>();
 
 	std::thread executeThread;
@@ -18,7 +20,7 @@ private:
 #endif
 
 public:
-	explicit ServerIMPL(const uint16_t& _port, const std::uint8_t& _threadCount) : Net::ServerInterface<MessageTypes, MessageStatus>(_port), mediator(_threadCount)
+	explicit ServerIMPL(const uint16_t& _port, const std::uint8_t& _threadCount) : Net::ServerInterface<Net::PeecMessage>(_port), mediator(_threadCount)
 	{
 		mediator.RegisterHandler(MessageTypes::DownloadFile, std::make_unique<DownloadHandler>(container));
 	}
@@ -59,11 +61,11 @@ public:
 
 	void AddRegisteredFile(const std::string& _fileName, const std::string& _filePath, const std::size_t& _fileLength);
 
-	void OnMessage(std::shared_ptr<Net::OwnerMessage<MessageTypes, MessageStatus>> _ownMsg) override;
+	void OnMessage(std::shared_ptr<Net::OwnerMessage<Net::PeecMessage>> _ownMsg) override;
 
-	void OnConnect(std::shared_ptr<Net::Connection<MessageTypes, MessageStatus>> _handleClient) override;
+	void OnConnect(std::shared_ptr<Net::Connection<Net::PeecMessage>> _handleClient) override;
 
-	void OnDisconnect(std::shared_ptr<Net::Connection<MessageTypes, MessageStatus>> _handleClient) override;
+	void OnDisconnect(std::shared_ptr<Net::Connection<Net::PeecMessage>> _handleClient) override;
 };
 
 inline void ServerIMPL::AddRegisteredFile(const std::string& _fileName, const std::string& _filePath, const std::size_t& _fileLength)
@@ -76,22 +78,22 @@ inline void ServerIMPL::AddRegisteredFile(const std::string& _fileName, const st
 #endif
 }
 	 
-inline void ServerIMPL::OnMessage(std::shared_ptr<Net::OwnerMessage<MessageTypes, MessageStatus>> _ownMsg)
+inline void ServerIMPL::OnMessage(std::shared_ptr<Net::OwnerMessage<Net::PeecMessage>> _ownMsg)
 {
-	if (!_ownMsg->remoteMsg.GetStrData().empty())
+	if (!_ownMsg->remoteMsg.ConvertToString().empty())
 	{
-		spdlog::info("Message Request: {0}", _ownMsg->remoteMsg.GetStrData());
+		spdlog::info("Message Request: {0}", _ownMsg->remoteMsg.ConvertToString());
 	}
 
 	mediator.HandleMessage(_ownMsg);
 }
 
-inline void ServerIMPL::OnConnect(std::shared_ptr<Net::Connection<MessageTypes, MessageStatus>> _handleClient)
+inline void ServerIMPL::OnConnect(std::shared_ptr<Net::Connection<Net::PeecMessage>> _handleClient)
 {
 	spdlog::info("Client connection: {0}:{1}", _handleClient->GetAddressRemote(), _handleClient->GetPortRemote());
 }
 
-inline void ServerIMPL::OnDisconnect(std::shared_ptr<Net::Connection<MessageTypes, MessageStatus>> _handleClient)
+inline void ServerIMPL::OnDisconnect(std::shared_ptr<Net::Connection<Net::PeecMessage>> _handleClient)
 {
 	spdlog::info("Client Disconnect");
 }

@@ -1,7 +1,7 @@
 #pragma once
 
+#include <network/MessageInterface.hpp>
 #include <utils/CommandParser.hpp>
-#include <network/StructMessage.hpp>
 #include <utils/Utils.hpp>
 
 #include <PeecMessageTypes.hpp>
@@ -16,8 +16,8 @@ void PrintReply(const std::string& _data, MessageStatus _status, MessageTypes _t
 
 void CommandList(const Utils::Command& _command, std::shared_ptr<ClientIMPL> _cpeer, std::shared_ptr<ServerIMPL> _speer)
 {
-	Net::OWN_MSG_PTR<MessageTypes, MessageStatus> msg = _cpeer->GETRequest(MessageTypes::GetFileList);
-	PrintReply(msg->remoteMsg.GetStrData(), msg->remoteMsg.GetStatus(), msg->remoteMsg.GetType());
+	Net::OWN_MSG_PTR<Net::PeecMessage> msg = _cpeer->GETRequest(MessageTypes::GetFileList);
+	PrintReply(msg->remoteMsg.ConvertToString(), msg->remoteMsg.GetStatus(), msg->remoteMsg.GetType());
 
 #ifdef _DEBUG
 	std::vector<std::string> containerServer = _speer->GetContainer();
@@ -30,60 +30,55 @@ void CommandList(const Utils::Command& _command, std::shared_ptr<ClientIMPL> _cp
 
 void CommandLocation(const Utils::Command& _command, std::shared_ptr<ClientIMPL> _cpeer)
 {
-	if (!_command.arguments.empty())
-	{
-		JSON jsonReq;
-		jsonReq["FILENAME"] = _command.arguments[0];
+	JSON jsonReq;
+	jsonReq["FILENAME"] = _command.arguments[0];
 
-		Net::OWN_MSG_PTR<MessageTypes, MessageStatus> msg = _cpeer->POSTRequest(MessageTypes::FileLocation, jsonReq);
-		PrintReply(msg->remoteMsg.GetStrData(), msg->remoteMsg.GetStatus(), msg->remoteMsg.GetType());
-	}
+	Net::OWN_MSG_PTR<Net::PeecMessage> msg = _cpeer->POSTRequest(MessageTypes::FileLocation, jsonReq);
+	PrintReply(msg->remoteMsg.ConvertToString(), msg->remoteMsg.GetStatus(), msg->remoteMsg.GetType());
 }
 
 void CommandRegistration(const Utils::Command& _command, std::shared_ptr<ClientIMPL> _cpeer, std::shared_ptr<ServerIMPL> _speer)
 {
-	if (!_command.arguments.empty())
+	FileS::PathStruct path(_command.arguments[0]);
+
+	if (!FileS::FileSystemManager::FileExists(path))
 	{
-		FileS::PathStruct path(_command.arguments[0]);
-
-		if (FileS::FileSystemManager::FileExists(path))
-		{
-			JSON jsonReq;
-			jsonReq["FILENAME"] = path.GetPathFileName();
-			jsonReq["FILELENGTH"] = path.GetFileLenght();
-			jsonReq["ADDRESS"] = _speer->GetAddress();
-			jsonReq["PORT"] = _speer->GetPort();
-
-			Net::OWN_MSG_PTR<MessageTypes, MessageStatus> msg = _cpeer->POSTRequest(MessageTypes::FileRegistration, jsonReq);
-			PrintReply(msg->remoteMsg.GetStrData(), msg->remoteMsg.GetStatus(), msg->remoteMsg.GetType());
-					
-			if (msg->remoteMsg.GetStatus() == MessageStatus::SUCCESS)
-			{
-				_speer->AddRegisteredFile(path.GetPathFileName(), path.GetPath(), path.GetFileLenght());
-			}
-		}
-		else
-		{
-			spdlog::error("File [{}] doesn't exist", path.GetPath());
-		}
+		spdlog::error("File [{}] doesn't exist", path.GetPath());
+		return;
 	}
+
+	JSON jsonReq;
+	jsonReq["FILENAME"] = path.GetPathFileName();
+	jsonReq["FILELENGTH"] = path.GetFileLenght();
+	jsonReq["ADDRESS"] = _speer->GetAddress();
+	jsonReq["PORT"] = _speer->GetPort();
+
+	Net::OWN_MSG_PTR<Net::PeecMessage> msg = _cpeer->POSTRequest(MessageTypes::FileRegistration, jsonReq);
+	PrintReply(msg->remoteMsg.ConvertToString(), msg->remoteMsg.GetStatus(), msg->remoteMsg.GetType());
+					
+	if (msg->remoteMsg.GetStatus() == MessageStatus::FAILURE)
+	{
+		spdlog::error("failed registration file: {0}", msg->remoteMsg.ConvertToJson()["MESSAGE"]);
+		return;
+	}
+
+	_speer->AddRegisteredFile(path.GetPathFileName(), path.GetPath(), path.GetFileLenght());
+}
+
+
+void DownloadFilePart(const std::string& _filename, const std::string& _address, const uint16_t& _port, const size_t& _start, const size_t& _end, std::vector<char*>& _buffer)
+{
 }
 
 void CommandDownloadFile(const Utils::Command& _command, std::shared_ptr<ClientIMPL> _cpeer)
 {
-	if (_command.arguments.empty())
-	{
-		spdlog::error("command arguments is empty!");
-		return ;
-	}
-
 	FileS::PathStruct path(_command.arguments[0]);
 
 	JSON jsonReq;
 	jsonReq["FILENAME"] = path.GetPathFileName();
 
-	Net::OWN_MSG_PTR<MessageTypes, MessageStatus> msgPorts = _cpeer->POSTRequest(MessageTypes::FileLocation, jsonReq);
-	JSON jsonRespPorts = msgPorts->remoteMsg.GetJSONData();
+	Net::OWN_MSG_PTR<Net::PeecMessage> msgPorts = _cpeer->POSTRequest(MessageTypes::FileLocation, jsonReq);
+	JSON jsonRespPorts = msgPorts->remoteMsg.ConvertToJson();
 
 	if (msgPorts->remoteMsg.GetStatus() == MessageStatus::FAILURE)
 	{
@@ -92,13 +87,13 @@ void CommandDownloadFile(const Utils::Command& _command, std::shared_ptr<ClientI
 	}
 
 	ClientIMPL peerConnection;
-	peerConnection.Connect(jsonRespPorts.back()["ADDRESS"], jsonRespPorts.back()["PORT"]);
+	peerConnection.Connect(jsonRespPorts.front()["ADDRESS"], jsonRespPorts.front()["PORT"]);
 
-	Net::OWN_MSG_PTR<MessageTypes, MessageStatus> msg = peerConnection.POSTRequest(MessageTypes::DownloadFile, jsonReq);
+	Net::OWN_MSG_PTR<Net::PeecMessage> msg = peerConnection.POSTRequest(MessageTypes::DownloadFile, jsonReq);
 		
 	if (msg->remoteMsg.GetStatus() == MessageStatus::FAILURE)
 	{
-		spdlog::error("failed download file: {0}", msg->remoteMsg.GetJSONData()["MESSAGE"]);
+		spdlog::error("failed download file: {0}", msg->remoteMsg.ConvertToJson()["MESSAGE"]);
 		return;
 	}
 	
@@ -109,7 +104,7 @@ void CommandDownloadFile(const Utils::Command& _command, std::shared_ptr<ClientI
 		return;
 	}
 
-	file.Write(reinterpret_cast<const char*>(msg->remoteMsg.body.data.data()), msg->remoteMsg.body.data.size());
+	file.Write(reinterpret_cast<const char*>(msg->remoteMsg.Body().Data().data()), msg->remoteMsg.BSize());
 }
 
 void CommandExit(const Utils::Command& _command, std::shared_ptr<ClientIMPL> _cpeer, std::shared_ptr<ServerIMPL> _speer, std::shared_ptr<Utils::CommandParser> _parser)

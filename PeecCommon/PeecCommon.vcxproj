@@ -25,13 +25,14 @@
     <ClInclude Include="include\PeecCommonHeaders.hpp" />
     <ClInclude Include="include\PeecMessageStatus.hpp" />
     <ClInclude Include="include\PeecMessageTypes.hpp" />
+    <ClInclude Include="include\PeecStructMessage.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{45608575-5ae2-4567-8ec8-6cf291c66508}</ProjectGuid>
     <RootNamespace>PeecCommon</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -111,7 +112,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level1</WarningLevel>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>_WINSOCK_DEPRECATED_NO_WARNINGS;_WIN32_WINNT=_WIN32_WINNT_WIN10;_DISABLE_VECTOR_ANNOTATION;_DISABLE_STRING_ANNOTATION;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)include;$(SolutionDir)3dpart\include;$(SolutionDir)..\xProjectLib\xProject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

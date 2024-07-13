@@ -4,9 +4,9 @@
 
 enum class MessageTypes : uint32_t 
 {
-	ServerPing = 200,
-	FileRegistration,
-	FileLocation,
-	GetFileList,
-	DownloadFile
+	ServerPing		 = 201,
+	FileRegistration = 202,
+	FileLocation	 = 203,
+	GetFileList		 = 204,
+	DownloadFile	 = 205
 };
