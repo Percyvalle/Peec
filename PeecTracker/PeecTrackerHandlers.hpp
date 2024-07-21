@@ -32,16 +32,8 @@ struct FileRegistrationHandler : public Net::MessageHandler<Net::PeecMessage>
 													  JsonMSGDump("MESSAGE", "Invalidate data"));
 		}
 
-		if (containerServer->FileExistsOnServer(jsonRequestData["FILENAME"]))
-		{
-			return Net::MessageFactory::CreateMessage(MessageTypes::FileRegistration,
-													  MessageStatus::FAILURE,
-													  JsonMSGDump("MESSAGE", "The file is already registered"));
-		}
-
-		std::size_t countChunks = CalculateChunkCount(jsonRequestData["FILELENGTH"]);
-		FileInfo newFile{jsonRequestData["FILENAME"], countChunks, jsonRequestData["FILELENGTH"]};
-		PeerInfo newPeer{jsonRequestData["ADDRESS"], jsonRequestData["PORT"]};
+		Info::FileInfo newFile{jsonRequestData["FILENAME"], jsonRequestData["FILELENGTH"]};
+		Info::PeerInfo newPeer{jsonRequestData["ADDRESS"], jsonRequestData["PORT"]};
 
 		containerServer->AddFile(newFile, newPeer);
 
@@ -70,11 +62,11 @@ struct FileLocationHandler : public Net::MessageHandler<Net::PeecMessage>
 		{
 			JSON jsonResponse = containerServer->GetFileLocationJSON(jsonRequestData["FILENAME"]);
 			jsonResponse.push_back(JSON::object());
-			jsonResponse.back()["COUNT_CHUNK"] = containerServer->files[jsonRequestData["FILENAME"]].countChunks;
+			jsonResponse.back()["FILELENGTH"] = containerServer->files[jsonRequestData["FILENAME"]].fileLength;
 
 			return Net::MessageFactory::CreateMessage(MessageTypes::FileLocation,
-																				   MessageStatus::SUCCESS, 
-																				   jsonResponse.dump());
+													  MessageStatus::SUCCESS, 
+													  jsonResponse.dump());
 		}
 
 		return Net::MessageFactory::CreateMessage(MessageTypes::FileLocation, MessageStatus::FAILURE, JsonMSGDump("MESSAGE", "File is not exists"));

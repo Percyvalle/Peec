@@ -22,10 +22,12 @@
     <ClCompile Include="src\PeecCommon_main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\PeecChunk.hpp" />
     <ClInclude Include="include\PeecCommonHeaders.hpp" />
     <ClInclude Include="include\PeecMessageStatus.hpp" />
     <ClInclude Include="include\PeecMessageTypes.hpp" />
     <ClInclude Include="include\PeecStructMessage.hpp" />
+    <ClInclude Include="include\PeecInfoStruct.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

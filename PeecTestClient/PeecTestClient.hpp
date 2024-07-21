@@ -10,9 +10,7 @@ class TestClient : public Net::ClientInterface<Net::PeecMessage>
 public:
 	Net::OWN_MSG_PTR<Net::PeecMessage> RequestServerPing()
 	{
-		Net::PeecMessage msg;
-
-		msg.SetType(MessageTypes::ServerPing);
+		Net::PeecMessage msg = Net::MessageFactory::CreateMessage(MessageTypes::ServerPing, MessageStatus::UNDEFINED);
 
 		Send(msg);
 

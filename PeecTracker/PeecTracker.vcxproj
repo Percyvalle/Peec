@@ -147,7 +147,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PeecContainer.hpp" />
-    <ClInclude Include="PeecFileInfo.hpp" />
     <ClInclude Include="PeecTrackerHandlers.hpp" />
     <ClInclude Include="PeecTrackerServer.hpp" />
   </ItemGroup>

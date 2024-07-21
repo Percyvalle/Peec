@@ -32,9 +32,6 @@
     <ClInclude Include="PeecTrackerHandlers.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="PeecFileInfo.hpp">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="PeecContainer.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>

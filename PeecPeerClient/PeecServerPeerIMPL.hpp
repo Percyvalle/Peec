@@ -11,6 +11,7 @@
 class ServerIMPL : public Net::ServerInterface<Net::PeecMessage>
 {
 private:
+	std::atomic_bool stopThread = false;
 	Net::HandlerMediator<Net::PeecMessage, MessageTypes> mediator;
 	std::shared_ptr<FileContainerMap> container = std::make_shared<FileContainerMap>();
 
@@ -27,6 +28,7 @@ public:
 
 	~ServerIMPL()
 	{
+		stopThread.store(true, std::memory_order_release);
 		if (executeThread.joinable())
 		{
 			executeThread.join();
@@ -41,7 +43,7 @@ public:
 	{
 		std::function executeFun = [this]()
 			{
-				while (true)
+				while (!stopThread.load(std::memory_order_acquire))
 				{
 					Update();
 					CheckClientConnection();

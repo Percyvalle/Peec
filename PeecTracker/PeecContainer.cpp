@@ -1,6 +1,6 @@
 #include "PeecContainer.hpp"
 
-void ContainerTackerServer::AddFile(const FileInfo& _file, const PeerInfo& _location)
+void ContainerTackerServer::AddFile(const Info::FileInfo& _file, const Info::PeerInfo& _location)
 {
 	std::lock_guard<std::mutex> lock(contanerMtx);
 
@@ -21,11 +21,11 @@ bool ContainerTackerServer::FileExistsOnServer(const std::string& _filename)
 	return files.find(_filename) != files.end();
 }
 
-bool ContainerTackerServer::LocationIsExist(const std::string& _filename, const PeerInfo& _location)
+bool ContainerTackerServer::LocationIsExist(const std::string& _filename, const Info::PeerInfo& _location)
 {
-	std::function eqPeer = [&_location](const PeerInfo& peer) { return peer.address == _location.address; };
+	std::function eqPeer = [&_location](const Info::PeerInfo& peer) { return peer.address == _location.address; };
 	
-	const FileLocationVector& fileLocations = GetFileLocation(_filename);
+	const Info::FileLocationVector& fileLocations = GetFileLocation(_filename);
 	return std::find_if(fileLocations.begin(), fileLocations.end(), eqPeer) != fileLocations.end();
 }
 
@@ -34,7 +34,7 @@ JSON ContainerTackerServer::GetFileLocationJSON(const std::string& _filename)
 	std::lock_guard<std::mutex> lock(contanerMtx);
 
 	JSON jsonLocation;
-	for (const PeerInfo& i : files[_filename].fileLocation)
+	for (const Info::PeerInfo& i : files[_filename].fileLocation)
 	{
 		jsonLocation.push_back(JSON::object());
 		jsonLocation.back()["ADDRESS"] = i.address;
@@ -60,12 +60,12 @@ JSON ContainerTackerServer::GetFilesJSON()
 	return jsonFilesList;
 }
 
-void ContainerTackerServer::AddFileLocation(const std::string& _filename, const PeerInfo& _location)
+void ContainerTackerServer::AddFileLocation(const std::string& _filename, const Info::PeerInfo& _location)
 {
 	files[_filename].fileLocation.push_back(_location);
 }
 
-const FileLocationVector& ContainerTackerServer::GetFileLocation(const std::string& _filename)
+const Info::FileLocationVector& ContainerTackerServer::GetFileLocation(const std::string& _filename)
 {
 	return files[_filename].fileLocation;
 }
